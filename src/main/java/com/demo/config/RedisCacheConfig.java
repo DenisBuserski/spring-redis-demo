@@ -17,15 +17,17 @@ public class RedisCacheConfig {
     @Value("${redis.cache.product}")
     private String PRODUCT_CACHE;
 
+    @Value("${redis.cache.ttl}")
+    private int timeToLive;
+
     public String getProductCache() {
         return PRODUCT_CACHE;
     }
 
-
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10)) // TTL - Time To Live
+                .entryTtl(Duration.ofMinutes(timeToLive)) // TTL - Time To Live
                 .disableCachingNullValues() // Don't cache NULL values
                 .serializeValuesWith(RedisSerializationContext
                         .SerializationPair

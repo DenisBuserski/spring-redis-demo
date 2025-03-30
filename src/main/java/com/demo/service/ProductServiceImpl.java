@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
         System.out.println("Injected Cache Name: " + redisCacheConfig.getProductCache());
     }
 
-    @CachePut(value = "#{redisCacheConfig.getProductCache()}", key = "#result.id()")
+    @CachePut(value = "#{redisCacheConfig.getProductCache()}", key = "#result.id()") // Not mandatory to use on create operations
     public ProductDTO createProduct(ProductDTO productDto) {
         Product product = Product.builder()
                 .name(productDto.name())
