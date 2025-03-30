@@ -1,6 +1,7 @@
 package com.demo.config;
 
 import com.demo.model.ProductDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -13,6 +14,13 @@ import java.time.Duration;
 
 @Configuration
 public class RedisCacheConfig {
+    @Value("${redis.cache.product}")
+    private String PRODUCT_CACHE;
+
+    public String getProductCache() {
+        return PRODUCT_CACHE;
+    }
+
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {

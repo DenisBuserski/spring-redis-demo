@@ -20,31 +20,31 @@ public class ProductController {
         this.cacheService = cacheService;
     }
 
-    @PostMapping
+    @PostMapping("/add")
     @ResponseStatus(value = HttpStatus.CREATED)
     public ProductDTO createProduct(@RequestBody ProductDTO productDto) {
         return productService.createProduct(productDto);
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/get/{productId}")
     @ResponseStatus(value = HttpStatus.OK)
     public ProductDTO getProduct(@PathVariable long productId) {
         return productService.getProduct(productId);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     @ResponseStatus(value = HttpStatus.OK)
     public ProductDTO updateProduct(@RequestBody ProductDTO productDto) {
         return productService.updateProduct(productDto);
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/delete/{productId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable long productId) {
         productService.deleteProduct(productId);
     }
 
-    @DeleteMapping("/clear")
+    @DeleteMapping("/clear/cache")
     public void clearCache() {
         cacheService.clearCache();
     }

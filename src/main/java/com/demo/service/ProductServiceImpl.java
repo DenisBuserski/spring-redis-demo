@@ -1,11 +1,12 @@
 package com.demo.service;
 
+import com.demo.config.RedisCacheConfig;
 import com.demo.model.Product;
 import com.demo.model.ProductDTO;
 import com.demo.repository.ProductRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,16 +16,20 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
-
-    @Value("${redis.cache.product}")
-    public String PRODUCT_CACHE;
+    private final RedisCacheConfig redisCacheConfig;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, RedisCacheConfig redisCacheConfig) {
         this.productRepository = productRepository;
+        this.redisCacheConfig = redisCacheConfig;
     }
 
-    @CachePut(value = "#{productService.PRODUCT_CACHE}", key = "#result.id()")
+    @PostConstruct
+    public void init() {
+        System.out.println("Injected Cache Name: " + redisCacheConfig.getProductCache());
+    }
+
+    @CachePut(value = "#{redisCacheConfig.getProductCache()}", key = "#result.id()")
     public ProductDTO createProduct(ProductDTO productDto) {
         Product product = Product.builder()
                 .name(productDto.name())
@@ -35,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
         return new ProductDTO(savedProduct.getId(), savedProduct.getName(), savedProduct.getPrice());
     }
 
-    @Cacheable(value = "#{productService.PRODUCT_CACHE}", key = "#productId")
+    @Cacheable(value = "#{redisCacheConfig.getProductCache()}", key = "#productId")
     public ProductDTO getProduct(long productId) {
         log.info("Get product by id: {} from the DB", productId);
         Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Cannot find product with id " + productId));
@@ -43,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    @CachePut(value = "#{productService.PRODUCT_CACHE}", key = "#result.id()")
+    @CachePut(value = "#{redisCacheConfig.getProductCache()}", key = "#result.id()")
     public ProductDTO updateProduct(ProductDTO productDto) {
         Product product = productRepository.findById(productDto.id()).orElseThrow(() -> new IllegalArgumentException("Cannot find product with id " + productDto.id()));
         product.setName(productDto.name());
@@ -53,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
         return new ProductDTO(updatedProduct.getId(), updatedProduct.getName(), updatedProduct.getPrice());
     }
 
-    @CacheEvict(value = "#{productService.PRODUCT_CACHE}", key = "#productId")
+    @CacheEvict(value = "#{redisCacheConfig.getProductCache()}", key = "#productId")
     public void deleteProduct(long productId) {
         productRepository.deleteById(productId);
     }
