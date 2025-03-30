@@ -1,4 +1,4 @@
-# Spring application with Redis
+# Spring Boot application with Redis
 
 To start the application you need Redis and MySQL. Execute the below commands and start the application:
 ```
